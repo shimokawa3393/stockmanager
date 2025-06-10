@@ -36,9 +36,9 @@ stockmanagerProject/
 ├── frontend/
 │ └── stockmanager-app/ # Reactフロント
 └── .gitignore
+```
 
 ---
-```
 
 ## 👤 作者
 
