@@ -105,11 +105,13 @@ export default function StockDetailPage() {
       </h2>
       <h3>財務指標一覧</h3>
       <ul>
-        {Object.entries(data.metrics || {}).map(([key, value]) => (
-          <li key={key}>
-            <strong>{key}:</strong> {value}
-          </li>
-        ))}
+        {Object.entries(data.metrics || {})
+          .filter(([key]) => key !== "企業名" && key !== "株価")
+          .map(([key, value]) => (
+            <li key={key}>
+              <strong>{key}:</strong> {value}
+            </li>
+          ))}
       </ul>
       <Link to="/" className="back-link">
         ← 一覧に戻る

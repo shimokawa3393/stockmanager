@@ -22,10 +22,7 @@ pymysql.install_as_MySQLdb()
 # プロジェクトのルートを取得
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
-# .envを読み込み
-load_dotenv(dotenv_path=BASE_DIR / '.env')
-
+load_dotenv()  # プロジェクトルートにある .env を自動読み込み
 
 SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = os.getenv('DEBUG') == 'True'
