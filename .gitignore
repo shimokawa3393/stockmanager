@@ -1,21 +1,34 @@
-# バーチャル環境
-.venv/
-
-# 環境変数ファイル
+# =======================
+# 🍃 共通（OS / エディタ）
+# =======================
+.DS_Store
+.vscode/
 .env
 
-# VSCode設定
-.vscode/
-
-# Mac特有のファイル
-.DS_Store
-
-
-# Django migrations
+# =======================
+# 🐍 Python / Django
+# =======================
 **/migrations/
 !*/migrations/__init__.py
-
-
-# PyCache
 __pycache__/
 *.py[cod]
+
+# =======================
+# ⚛️ React / Node（frontend）
+# =======================
+# frontend 配下の除外
+frontend/stockmanager-app/node_modules/
+frontend/stockmanager-app/build/
+frontend/stockmanager-app/.env
+frontend/stockmanager-app/.env.*   # 全envをまとめて除外
+
+# その他のnode系キャッシュや生成物
+**/node_modules/
+**/coverage/
+**/build/
+**/.pnp/
+**/.pnp.js
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

@@ -1,0 +1,42 @@
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import api from "../api/axios";
+import "../styles/MyPage.css";  // ← 専用CSS
+
+export default function MyPage() {
+  const [user, setUser] = useState(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    api
+      .get("accounts/user/")
+      .then((res) => setUser(res.data))
+      .catch(() => navigate("/login")); // ログインしてなければリダイレクト
+  }, []);
+
+  const handleDeleteAccount = async () => {
+    if (!window.confirm("本当にアカウントを削除しますか？")) return;
+    try {
+      await api.delete("accounts/delete/");
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("refresh_token");
+      alert("アカウントを削除しました。");
+      navigate("/register");
+    } catch (err) {
+      alert("削除に失敗しました。");
+    }
+  };
+
+  if (!user) return <p>読み込み中...</p>;
+
+  return (
+    <div className="mypage-container">
+      <h1>マイページ</h1>
+      <p><strong>ユーザー名:</strong> {user.username}</p>
+      <p><strong>メールアドレス:</strong> {user.email}</p>
+      <button className="delete-button" onClick={handleDeleteAccount}>
+        アカウント削除
+      </button>
+    </div>
+  );
+}
