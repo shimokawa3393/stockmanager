@@ -1,0 +1,21 @@
+# バーチャル環境
+.venv/
+
+# 環境変数ファイル
+.env
+
+# VSCode設定
+.vscode/
+
+# Mac特有のファイル
+.DS_Store
+
+
+# Django migrations
+**/migrations/
+!*/migrations/__init__.py
+
+
+# PyCache
+__pycache__/
+*.py[cod]
