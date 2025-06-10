@@ -27,6 +27,7 @@
 
 ## 📁 ディレクトリ構成
 
+```
 stockmanagerProject/
 ├── backend/ # Djangoアプリ
 │ ├── accounts/ # カスタムユーザー認証
@@ -37,6 +38,7 @@ stockmanagerProject/
 └── .gitignore
 
 ---
+```
 
 ## 👤 作者
 
