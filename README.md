@@ -21,7 +21,7 @@
 - **バックエンド**：Django REST Framework / Simple JWT
 - **データ取得**：yfinance / OpenAI API
 - **データベース**：MySQL
-- **その他**：環境変数管理（dotenv） / CORS対応 / キャッシュ機能
+- **その他**：環境変数管理（dotenv）/ キャッシュ機能
 
 ---
 
