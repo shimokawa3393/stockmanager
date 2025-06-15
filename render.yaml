@@ -3,7 +3,7 @@ services:
     name: stockmanager
     env: python
     buildCommand: cd backend && pip install -r requirements.txt
-    startCommand: cd backend && gunicorn backend.wsgi:application
+    startCommand: cd backend && gunicorn stockmanagerApp.wsgi:application
     envVars:
       - key: DJANGO_SETTINGS_MODULE
         value: backend.settings
