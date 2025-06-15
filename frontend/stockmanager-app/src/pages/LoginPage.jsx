@@ -14,7 +14,7 @@ export default function LoginPage() {
     e.preventDefault();
     setError("");
     try {
-      const response = await axios.post("http://localhost:8000/api/token/", {
+      const response = await axios.post("https://stockmanager-n3b7.onrender.com/api/token/", {
         email,
         password,
       });

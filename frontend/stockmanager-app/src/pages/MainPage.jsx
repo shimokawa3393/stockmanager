@@ -81,13 +81,13 @@ export default function MainPage() {
       const updatedData = [...data];
       if (data[index].is_saved) {
         await api.post(
-          "http://localhost:8000/api/stockmanager/remove/",
+          "https://stockmanager-n3b7.onrender.com/api/stockmanager/remove/",
           { symbol },
         );
         updatedData[index].is_saved = false;
       } else {
         await api.post(
-          "http://localhost:8000/api/stockmanager/save/",
+          "https://stockmanager-n3b7.onrender.com/api/stockmanager/save/",
           { symbol },
         );
         updatedData[index].is_saved = true;

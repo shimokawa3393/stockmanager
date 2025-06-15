@@ -26,7 +26,7 @@ export default function StockDetailPage() {
     const fetchDetails = async () => {
       try {
         const response = await api.get(
-          "http://localhost:8000/api/stockmanager/fetch/",
+          "https://stockmanager-n3b7.onrender.com/api/stockmanager/fetch/",
           { params: { symbol } },
         );
         setData(response.data);
