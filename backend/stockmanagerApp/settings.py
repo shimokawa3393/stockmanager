@@ -28,7 +28,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = os.getenv('DEBUG') == 'True'
 
 
-ALLOWED_HOSTS = ['stockmanager.onrender.com']
+ALLOWED_HOSTS = ['stockmanager-n3b7.onrender.com']
 
 
 # Application definition
