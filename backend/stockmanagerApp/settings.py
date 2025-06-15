@@ -62,6 +62,7 @@ MIDDLEWARE = [
 # Reactのローカル開発環境からのアクセスを許可
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
+    "https://stockmanager-e9d10.web.app",
 ]
 
 

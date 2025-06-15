@@ -2,7 +2,7 @@ import axios from "axios";
 
 // 共通インスタンス作成
 const api = axios.create({
-  baseURL: "http://localhost:8000/api/",
+  baseURL: "https://stockmanager-n3b7.onrender.com/api/",
 });
 
 // リクエスト前にトークンを自動付与
@@ -31,7 +31,7 @@ api.interceptors.response.use(
       originalRequest._retry = true;
 
       try {
-        const res = await axios.post("http://localhost:8000/api/token/refresh/", {
+        const res = await axios.post("https://stockmanager-n3b7.onrender.com/api/token/refresh/", {
           refresh: localStorage.getItem("refresh_token"),
         });
 
