@@ -14,6 +14,7 @@
 !*/migrations/__init__.py
 __pycache__/
 *.py[cod]
+.venv/
 
 # =======================
 # ⚛️ React / Node（frontend）
