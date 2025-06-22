@@ -2,7 +2,9 @@ services:
   - type: web
     name: stockmanager
     env: python
-    buildCommand: pip install -r backend/requirements.txt
+    buildCommand: |
+      pip install -r backend/requirements.txt
+      python manage.py collectstatic --noinput
     startCommand: gunicorn stockmanagerApp.wsgi:application --chdir backend
     envVars:
       - key: DJANGO_SETTINGS_MODULE

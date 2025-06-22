@@ -12,23 +12,24 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 
 import os
-from dotenv import load_dotenv
 from pathlib import Path
-import pymysql
 from datetime import timedelta
-pymysql.install_as_MySQLdb()
+from decouple import config
+import dj_database_url
 
 
 # プロジェクトのルートを取得
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-load_dotenv()  # プロジェクトルートにある .env を自動読み込み
+ENV = config('ENV', default='dev')
 
-SECRET_KEY = os.getenv('SECRET_KEY')
-DEBUG = os.getenv('DEBUG') == 'True'
+DEBUG = ENV == 'dev'
+SECRET_KEY = config('SECRET_KEY')
+ALLOWED_HOSTS = config('ALLOWED_HOSTS').split(',')
 
-
-ALLOWED_HOSTS = ['stockmanager-n3b7.onrender.com']
+DATABASES = {
+    'default': dj_database_url.parse(config('DATABASE_URL'))
+}
 
 
 # Application definition
@@ -97,16 +98,6 @@ WSGI_APPLICATION = "stockmanagerApp.wsgi.application"
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.mysql",
-        "NAME": os.getenv("DB_NAME"),
-        "USER": os.getenv("DB_USER"),
-        "PASSWORD": os.getenv("DB_PASSWORD"),
-        "HOST": os.getenv("DB_HOST", "localhost"),
-        "PORT": os.getenv("DB_PORT", "3306"),
-    }
-}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
