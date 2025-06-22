@@ -5,7 +5,7 @@ services:
     buildCommand: |
       pip install -r backend/requirements.txt
       python manage.py collectstatic --noinput
-    startCommand: gunicorn stockmanagerApp.wsgi:application --chdir backend
+    startCommand: python manage.py migrate && gunicorn stockmanagerApp.wsgi:application --chdir backend
     envVars:
       - key: DJANGO_SETTINGS_MODULE
         value: stockmanagerApp.settings
