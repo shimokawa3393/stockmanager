@@ -37,5 +37,3 @@ stockmanagerProject/
 │ └── stockmanager-app/ # Reactフロント
 └── .gitignore
 ```
-
----

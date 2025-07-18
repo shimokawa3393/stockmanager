@@ -12,8 +12,8 @@
 # =======================
 # 🐍 Python / Django
 # =======================
-**/migrations/
-!*/migrations/__init__.py
+# **/migrations/
+# !*/migrations/__init__.py
 __pycache__/
 *.py[cod]
 .venv/

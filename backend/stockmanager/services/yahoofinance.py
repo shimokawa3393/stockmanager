@@ -1,19 +1,4 @@
-# CompanyFinancialsFetcher クラス
-# 企業の財務データ（info / BS / PL）を yfinance を使って取得するクラス。
-# symbol には 'AAPL' や '7203.T' のようなティッカーシンボルを渡す。
-# 日本株で int 型（例：7203）を渡した場合、自動で ".T" を付与し、yfinance のシンボル形式に対応。
-# getCompanyFinancials() を呼び出すと、以下の3つをタプルで返す：
-# - company_info（企業基本情報：stock.info）
-# - company_bs（バランスシート：stock.balance_sheet）
-# - company_pl（損益計算書：stock.financials）
-# ※ データ取得にはインターネット接続が必要。
-
-# 注意：
-# - PL・BSはDataFrame形式、infoは辞書型で返る。
-# - yfinance 側の仕様変更や接続エラーにより、項目が NaN や空になる場合がある。
-# - 将来的にキャッシュ化や例外処理の追加を検討する。
-
-
+import math
 import yfinance as yf
 
 
@@ -23,6 +8,7 @@ def safe_round(value, digits=2):
         return round(value, digits)
     except Exception:
         return "N/A"
+
 
 # 財務諸表の項目が存在しない場合はNoneを返す関数
 def get_values_or_error(df, keys, source_name=""):
@@ -34,6 +20,28 @@ def get_values_or_error(df, keys, source_name=""):
             print(f"❌ {source_name} から '{key}' を取得できませんでした")
             return None  # 一つでも欠けたら中断
     return values
+
+
+# 指定したキーの値を float に変換し、NaN や欠損をチェックする関数
+def extract_and_validate(values_dict, keys, allow_zero_divisor=False):
+    """
+    指定したキーの値を float に変換し、NaN や欠損をチェックする。
+    
+    :param values_dict: 対象の辞書
+    :param keys: 必要なキーのリスト（順番が意味を持つ）
+    :param allow_zero_divisor: 最後の要素（除数）が0でも許容するならTrue
+    :return: [float値のリスト] または None（不正な場合）
+    """
+    try:
+        floats = [float(values_dict[k]) for k in keys]
+        if any(math.isnan(x) for x in floats):
+            return None
+        if not allow_zero_divisor and floats[-1] == 0:
+            return None
+        return floats
+    except (KeyError, ValueError, TypeError):
+        return None
+
 
 # 財務諸表を取得するクラス
 class CompanyFinancialsFetcher:
@@ -68,102 +76,101 @@ class CompanyFinancialsFetcher:
         pl_values = get_values_or_error(self.company_pl, pl_keys, source_name="PL")
         bs_values = get_values_or_error(self.company_bs, bs_keys, source_name="BS")
 
-        if not pl_values or not bs_values:
+        validated_pl = extract_and_validate(pl_values, pl_keys)
+        validated_bs = extract_and_validate(bs_values, bs_keys)
+        if not validated_pl or not validated_bs:
             return "データなし"
 
-        ebit = pl_values["EBIT"]
-        tax_rate = pl_values["Tax Rate For Calcs"]
-        invested_capital = bs_values["Invested Capital"]
-
-        nopat = ebit * (1 - tax_rate)
-        return safe_round(nopat / invested_capital * 100)
+        ebit, tax_rate, invested_capital = validated_pl[0], validated_pl[1], validated_bs[0]
+        return safe_round(ebit * (1 - tax_rate) / invested_capital * 100)
 
 
     # 純利益率を計算する関数
     def calculateProfitMargin(self):
         pl_keys = ["Net Income", "Total Revenue"]
         pl_values = get_values_or_error(self.company_pl, pl_keys, source_name="PL")
-        if not pl_values:
+        
+        validated_pl = extract_and_validate(pl_values, pl_keys)
+        if not validated_pl:
             return "データなし"
-        net_income = pl_values["Net Income"]
-        total_revenue = pl_values["Total Revenue"]
+        net_income, total_revenue = validated_pl[0], validated_pl[1]
         return safe_round(net_income / total_revenue * 100)
+
 
     # 自己資本比率を計算する関数
     def calculateEquityRatio(self):
         bs_keys = ["Stockholders Equity", "Total Assets"]
         bs_values = get_values_or_error(self.company_bs, bs_keys, source_name="BS")
-        if not bs_values:
+        
+        validated_bs = extract_and_validate(bs_values, bs_keys, allow_zero_divisor=True)
+        if not validated_bs:
             return "データなし"
-        equity = bs_values["Stockholders Equity"]
-        total_assets = bs_values["Total Assets"]
-        return safe_round(equity / total_assets * 100)
+        stockholders_equity, total_assets = validated_bs[0], validated_bs[1]
+        return safe_round(stockholders_equity / total_assets * 100)
 
     # 流動比率を計算する関数
     def calculateCurrentRatio(self):
         bs_keys = ["Current Assets", "Current Liabilities"]
         bs_values = get_values_or_error(self.company_bs, bs_keys, source_name="BS")
-        if not bs_values:
+        validated_bs = extract_and_validate(bs_values, bs_keys)
+        if not validated_bs:
             return "データなし"
-        current_assets = bs_values["Current Assets"]
-        current_liabilities = bs_values["Current Liabilities"]
+        current_assets, current_liabilities = validated_bs[0], validated_bs[1]
         return safe_round(current_assets / current_liabilities * 100)
 
     # 当座比率を計算する関数
     def calculateQuickRatio(self):
         bs_keys = ["Current Assets", "Inventory", "Current Liabilities"]
         bs_values = get_values_or_error(self.company_bs, bs_keys, source_name="BS")
-        if not bs_values:
+        validated_bs = extract_and_validate(bs_values, bs_keys)
+        if not validated_bs:
             return "データなし"
-        current_assets = bs_values["Current Assets"]
-        inventory = bs_values["Inventory"]
-        current_liabilities = bs_values["Current Liabilities"]
+        current_assets, inventory, current_liabilities = validated_bs[0], validated_bs[1], validated_bs[2]
         return safe_round((current_assets - inventory) / current_liabilities * 100)
 
     # 固定比率を計算する関数
     def calculateFixedRatio(self):
         bs_keys = ["Net Tangible Assets", "Stockholders Equity"]
         bs_values = get_values_or_error(self.company_bs, bs_keys, source_name="BS")
-        if not bs_values:
+        validated_bs = extract_and_validate(bs_values, bs_keys)
+        if not validated_bs:
             return "データなし"
-        fixed_assets = bs_values["Net Tangible Assets"]
-        equity = bs_values["Stockholders Equity"]
-        return safe_round(fixed_assets / equity * 100)
+        net_tangible_assets, stockholders_equity = validated_bs[0], validated_bs[1]
+        return safe_round(net_tangible_assets / stockholders_equity * 100)
 
     # 固定長期適合率を計算する関数
     def calculateFixedLongTermAppropriatenessRatio(self):
         bs_keys = ["Net Tangible Assets", "Stockholders Equity", "Long Term Debt"]
         bs_values = get_values_or_error(self.company_bs, bs_keys, source_name="BS")
-        if not bs_values:
+        validated_bs = extract_and_validate(bs_values, bs_keys)
+        if not validated_bs:
             return "データなし"
-        fixed_assets = bs_values["Net Tangible Assets"]
-        equity = bs_values["Stockholders Equity"]
-        long_term_liabilities = bs_values["Long Term Debt"]
-        return safe_round(fixed_assets / (equity + long_term_liabilities) * 100)
+        net_tangible_assets, stockholders_equity, long_term_debt = validated_bs[0], validated_bs[1], validated_bs[2]
+        return safe_round(net_tangible_assets / (stockholders_equity + long_term_debt) * 100)
 
     # 負債比率を計算する関数
     def calculateDebtRatio(self):
         bs_keys = ["Total Liabilities Net Minority Interest", "Total Assets"]
         bs_values = get_values_or_error(self.company_bs, bs_keys, source_name="BS")
-        if not bs_values:
+        validated_bs = extract_and_validate(bs_values, bs_keys)
+        if not validated_bs:
             return "データなし"
-        total_liabilities = bs_values["Total Liabilities Net Minority Interest"]
-        total_assets = bs_values["Total Assets"]
-        return safe_round(total_liabilities / total_assets * 100)
+        total_liabilities_net_minority_interest, total_assets = validated_bs[0], validated_bs[1]
+        return safe_round(total_liabilities_net_minority_interest / total_assets * 100)
 
     # ネットD/Eレシオを計算する関数
     def calculateNetDERatio(self):
         bs_keys = ["Total Debt", "Cash And Cash Equivalents", "Stockholders Equity"]
         bs_values = get_values_or_error(self.company_bs, bs_keys, source_name="BS")
-        if not bs_values:
+        validated_bs = extract_and_validate(bs_values, bs_keys)
+        if not validated_bs:
             return "データなし"
-        net_debt = bs_values["Total Debt"] - bs_values["Cash And Cash Equivalents"]
-        equity = bs_values["Stockholders Equity"]
-        return safe_round(net_debt / equity * 100)
+        total_debt, cash_and_cash_equivalents, stockholders_equity = validated_bs[0], validated_bs[1], validated_bs[2]
+        return safe_round(total_debt / (cash_and_cash_equivalents + stockholders_equity) * 100)
 
     # 上記の項目をJSONデータセットにまとめる関数
     def get_all_metrics(self):
-        if self.company_bs is None or self.company_pl is None:
+        if self.company_bs is None or self.company_pl is None or self.company_info is None:
             raise ValueError("先に getCompanyFinancials() を呼び出してください。")
 
         metrics = {}
@@ -198,3 +205,10 @@ class CompanyFinancialsFetcher:
         return metrics
 
 
+def main():
+    fetcher = CompanyFinancialsFetcher("GOOGL")
+    fetcher.getCompanyFinancials()
+    print(fetcher.get_all_metrics())
+
+if __name__ == "__main__":
+    main()
