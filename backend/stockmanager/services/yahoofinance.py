@@ -203,12 +203,3 @@ class CompanyFinancialsFetcher:
         metrics["ネットD/Eレシオ"] = self.calculateNetDERatio()
 
         return metrics
-
-
-def main():
-    fetcher = CompanyFinancialsFetcher("GOOGL")
-    fetcher.getCompanyFinancials()
-    print(fetcher.get_all_metrics())
-
-if __name__ == "__main__":
-    main()

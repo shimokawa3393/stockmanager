@@ -10,6 +10,8 @@ CACHE_TIMEOUT = 60 * 60  # 1時間
 def search_symbol(company_name, request):
     symbol_fetcher = SymbolFetcher(company_name)
     symbol = symbol_fetcher.getSymbol()
+    if symbol == "Invalid":
+        raise ValueError("企業名が正しくありません。")
     return symbol
 
 
