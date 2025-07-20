@@ -12,36 +12,56 @@ export default function MainPage() {
   const [username, setUsername] = useState(null);
   const navigate = useNavigate();
 
-  const token = localStorage.getItem("access_token");
-
+  // ページが読み込まれたら、トークンを更新
   useEffect(() => {
-    if (token) {
-      api
-        .get("accounts/user/")
-        .then((res) => setUsername(res.data.username))
-        .catch(() => setUsername(null));
-    }
-
-    const fetchData = async () => {
-      if (!token) {
-        setError("ポートフォリオ機能は、ログイン後にご利用になれます。");
-        setLoading(false);
-        return;
+    const init = async () => {
+      setLoading(true);
+  
+      const refreshToken = localStorage.getItem("refresh_token");
+  
+      // トークン更新
+      if (refreshToken) {
+        try {
+          const res = await api.post("/token/refresh/", { refresh: refreshToken });
+          const newAccess = res.data.access;
+          localStorage.setItem("access_token", newAccess);
+          api.defaults.headers.common["Authorization"] = `Bearer ${newAccess}`;
+        } catch {
+          localStorage.removeItem("access_token");
+          localStorage.removeItem("refresh_token");
+        }
       }
-
+  
+      // ユーザー情報取得
       try {
-        const response = await api.get("stockmanager/main/");
-        setData(response.data.results);
+        const res = await api.get("accounts/user/");
+        setUsername(res.data.username);
+        } catch {
+          setUsername(null);
+      }
+  
+      // ポートフォリオ取得
+      try {
+        const res = await api.get("stockmanager/main/");
+        setData(res.data.results);
       } catch (err) {
-        setError("データ取得に失敗しました。ログインが必要かもしれません。");
+        if (err.response?.status === 401) {
+          // 非ログイン状態での想定通りの挙動
+          setError("ポートフォリオ機能はログイン後にご利用になれます。");
+        } else {
+          setError("データ取得に失敗しました。");
+        }
       } finally {
         setLoading(false);
       }
     };
-
-    fetchData();
+  
+    init();
   }, []);
+  
 
+  // 検索ボタンを押したら、検索ワードをAPIに送信して、銘柄のシンボルを取得
+  // 銘柄のシンボルを取得したら、銘柄の詳細ページに遷移
   const handleSearch = async () => {
     if (!searchTerm.trim()) {
       alert("企業名を入力してください。");
@@ -68,6 +88,7 @@ export default function MainPage() {
     }
   };
 
+  // ログアウト
   const handleLogout = () => {
     localStorage.removeItem("access_token");
     localStorage.removeItem("refresh_token");
@@ -75,7 +96,7 @@ export default function MainPage() {
     navigate("/login");
   };
 
-
+  // お気に入りに追加/削除
   const toggleSave = async (symbol, index) => {
     try {
       const updatedData = [...data];

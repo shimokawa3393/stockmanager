@@ -11,24 +11,23 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 
-import os
 from pathlib import Path
 from datetime import timedelta
-from decouple import config
+import os
 import dj_database_url
 
 
 # プロジェクトのルートを取得
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-ENV = config('ENV', default='dev')
+ENV = os.environ.get('ENV', 'dev')
 
 DEBUG = ENV == 'dev'
-SECRET_KEY = config('SECRET_KEY')
-ALLOWED_HOSTS = config('ALLOWED_HOSTS').split(',')
+SECRET_KEY = os.environ.get('SECRET_KEY', 'your-secret-key-here')
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
 DATABASES = {
-    'default': dj_database_url.parse(config('DATABASE_URL'))
+    'default': dj_database_url.parse(os.environ.get('DATABASE_URL', 'sqlite:///db.sqlite3'))
 }
 
 
