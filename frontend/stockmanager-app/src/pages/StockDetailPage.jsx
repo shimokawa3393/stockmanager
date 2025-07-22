@@ -8,6 +8,7 @@ export default function StockDetailPage() {
   const { symbol } = useParams();
   const [data, setData] = useState(null);
   const [error, setError] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
   const [isSaved, setIsSaved] = useState(false);
   const [username, setUsername] = useState(null);
   const navigate = useNavigate();
@@ -15,7 +16,7 @@ export default function StockDetailPage() {
   const token = localStorage.getItem("access_token");
 
   useEffect(() => {
-    
+
     // ユーザー名を取得
     if (token) {
       api
@@ -40,6 +41,34 @@ export default function StockDetailPage() {
 
     fetchDetails();
   }, [symbol]);
+
+  // 検索ボタンを押したら、検索ワードをAPIに送信して、銘柄のシンボルを取得
+  // 銘柄のシンボルを取得したら、銘柄の詳細ページに遷移
+  const handleSearch = async () => {
+    if (!searchTerm.trim()) {
+      alert("企業名を入力してください。");
+      return;
+    }
+
+    try {
+      const response = await api.post("/stockmanager/search/", {
+        company_name: searchTerm,
+      });
+
+      const symbol = response.data.symbol;
+
+      if (!symbol) {
+        alert("シンボルが取得できませんでした。");
+        return;
+      }
+
+      // 🔸 ユーザー入力は変えず、ページだけ遷移
+      navigate(`/stockdetail/${symbol}`);
+    } catch (err) {
+      console.error("検索エラー:", err);
+      alert("銘柄の取得に失敗しました。");
+    }
+  };
 
   // ログアウト
   const handleLogout = () => {
@@ -69,8 +98,11 @@ export default function StockDetailPage() {
   if (!data) return <p>読み込み中...</p>;
 
   return (
-    <div className="detail-container">
+    <div className="main-container">
       <header className="header">
+        <div className="greeting">
+          {username ? `${username} さん` : "ゲスト さん"}
+        </div>
         <div className="nav-links">
           {username ? (
             <>
@@ -93,33 +125,61 @@ export default function StockDetailPage() {
           )}
         </div>
       </header>
-      <strong>{data.symbol}</strong>
-      <h1>
-        {data.metrics?.["企業名"] || "取得失敗"}{" "}
-        <span
-          className={`heart-icon ${isSaved ? "saved" : ""}`}
-          onClick={toggleSave}
-          title="お気に入りに追加/削除"
-        >
-          {isSaved ? "❤️" : "🤍"}
-        </span>
-      </h1>
-      <h2>
-        <strong>株価:</strong> {data.metrics?.["株価"] || "-"}
-      </h2>
-      <h3>財務指標一覧</h3>
-      <ul>
-        {Object.entries(data.metrics || {})
-          .filter(([key]) => key !== "企業名" && key !== "株価")
-          .map(([key, value]) => (
-            <li key={key}>
-              <strong>{key}:</strong> {value}
-            </li>
-          ))}
-      </ul>
-      <Link to="/" className="back-link">
-        ← 一覧に戻る
-      </Link>
+
+      <div className="search-box">
+        <input
+          type="text"
+          placeholder="企業名で検索"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="search-input"
+        />
+        <button onClick={handleSearch} className="search-button">
+          検索
+        </button>
+      </div>
+
+      <div className="detail-container">
+        <strong>
+          {data.symbol}
+          <span
+            className={`heart-icon ${isSaved ? "saved" : ""}`}
+            onClick={toggleSave}
+            title="お気に入りに追加/削除"
+          >
+            {isSaved ? "❤️" : "🤍"}
+          </span>
+        </strong>
+        <h1>
+          {data.metrics?.["企業名"] || "取得失敗"}{" "}
+        </h1>
+        <p>
+          <strong>WEBサイト:</strong> <a href={data.metrics?.["WEBサイト"]} target="_blank" rel="noopener noreferrer">{data.metrics?.["WEBサイト"] || "-"}</a>
+        </p>
+        <p>
+          <strong>企業概要:</strong>
+          <br />
+          {data.metrics?.["企業概要"] || "-"}
+          <br />
+          <br />
+        </p>
+        <h2>
+          <strong>株価:</strong> {data.metrics?.["株価"] || "-"}
+        </h2>
+        <h3>財務指標一覧</h3>
+        <ul>
+          {Object.entries(data.metrics || {})
+            .filter(([key]) => key !== "企業名" && key !== "WEBサイト" && key !== "企業概要" && key !== "株価")
+            .map(([key, value]) => (
+              <li key={key}>
+                <strong>{key}:</strong> {value}
+              </li>
+            ))}
+        </ul>
+        <Link to="/" className="back-link">
+          ← 一覧に戻る
+        </Link>
+      </div>
     </div>
   );
 }

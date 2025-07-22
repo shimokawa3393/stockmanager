@@ -109,7 +109,7 @@ export default function MainPage() {
     <div className="main-container">
       <header className="header">
         <div className="greeting">
-          ようこそ {username ? `${username} さん` : "ゲスト さん"}
+          {username ? `${username} さん` : "ゲスト さん"}
         </div>
         <div className="nav-links">
           {username ? (
@@ -159,11 +159,8 @@ export default function MainPage() {
         <ul className="stock-list">
           {data.map((item, index) => (
             <div key={index} className="stock-card">
-              <strong>{item.symbol}</strong>
-              <h1>
-                <Link to={`/stockdetail/${item.symbol}`} className="stock-link">
-                  {item.metrics?.["企業名"] || "取得失敗"}
-                </Link>
+              <strong>
+                {item.symbol}
                 <span
                   className={`heart-icon ${item.is_saved ? "saved" : ""}`}
                   onClick={() => toggleSave(item.symbol, index)}
@@ -171,6 +168,11 @@ export default function MainPage() {
                 >
                   {item.is_saved ? "❤️" : "🤍"}
                 </span>
+              </strong>
+              <h1>
+                <Link to={`/stockdetail/${item.symbol}`} className="stock-link">
+                  {item.metrics?.["企業名"] || "取得失敗"}
+                </Link>
               </h1>
               <h2>
                 <strong>株価:</strong> {item.metrics?.["株価"] || "-"}
@@ -178,7 +180,7 @@ export default function MainPage() {
               <h3>財務指標一覧</h3>
               <ul>
                 {Object.entries(item.metrics || {})
-                  .filter(([key]) => key !== "企業名" && key !== "株価")
+                  .filter(([key]) => key !== "企業名" && key !== "WEBサイト" && key !== "企業概要" && key !== "株価")
                   .map(([key, value]) => (
                     <li key={key}>
                       <strong>{key}:</strong> {value}

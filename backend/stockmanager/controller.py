@@ -1,6 +1,6 @@
 import time
 from django.core.cache import cache
-from .services.chatgpt import SymbolFetcher
+from .services.chatgpt import UseChatGPT
 from .services.yahoofinance import CompanyFinancialsFetcher
 from .utils import convert_symbol
 
@@ -8,8 +8,8 @@ CACHE_TIMEOUT = 60 * 60  # 1時間
 
 # 検索から銘柄を表示する関数（会社名→シンボル）
 def search_symbol(company_name, request):
-    symbol_fetcher = SymbolFetcher(company_name)
-    symbol = symbol_fetcher.getSymbol()
+    symbol_fetcher = UseChatGPT()
+    symbol = symbol_fetcher.getSymbol(company_name)
     if symbol == "Invalid":
         raise ValueError("企業名が正しくありません。")
     return symbol

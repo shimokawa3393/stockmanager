@@ -1,5 +1,6 @@
 import math
 import yfinance as yf
+from .chatgpt import UseChatGPT
 
 
 # 小数点以下2桁に四捨五入する関数
@@ -176,6 +177,10 @@ class CompanyFinancialsFetcher:
         metrics = {}
 
         metrics["企業名"] = self.company_info.get("shortName", "N/A")
+        metrics["WEBサイト"] = self.company_info.get("website", "N/A")
+        
+        translation = UseChatGPT().getTranslation(self.company_info.get("longBusinessSummary", "N/A"))
+        metrics["企業概要"] = translation
 
         price = self.company_info.get("regularMarketPrice")
         currency_symbol = "\u00a5" if self.symbol_type == int else "$"

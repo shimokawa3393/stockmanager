@@ -10,18 +10,17 @@ BASE_DIR = Path(__file__).resolve().parents[2]
 # .envを読み込み
 load_dotenv(dotenv_path=BASE_DIR / ".env")
 
-# 企業名から証券コード（日本株）またはティッカーシンボル（米国株）を取得するクラス
-class SymbolFetcher:
-    def __init__(self, company_name):
-        self.company_name = company_name
+# ChatGPTを使用するクラス
+class UseChatGPT:
+    def __init__(self):
         self.symbol = None
         self.api_key = os.getenv("OpenAI_API_KEY")
         self.client = OpenAI(api_key=self.api_key)
 
     # 企業名から証券コード（日本株）またはティッカーシンボル（米国株）を取得する関数
-    def getSymbol(self):
+    def getSymbol(self, company_name):
         response = self.client.chat.completions.create(
-            model="gpt-4.1",
+            model="gpt-4o-mini",
             messages=[
                 {
                     "role": "system",
@@ -35,10 +34,31 @@ class SymbolFetcher:
                 },
                 {
                     "role": "user",
-                    "content": f"{self.company_name}の企業コード、またはティッカーを教えてください。",
+                    "content": f"{company_name}の企業コード、またはティッカーを教えてください。",
                 },
             ],
         )
         content = response.choices[0].message.content
         self.symbol = content.strip() if content else ""
         return self.symbol
+        
+        
+    def getTranslation(self, text):   
+        response = self.client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {
+                    "role": "system",
+                    "content": """
+                        英文を日本語に翻訳してください。
+                        """,
+                },
+                {
+                    "role": "user",
+                    "content": f"{text}",
+                },
+            ],
+        )
+        content = response.choices[0].message.content
+        translation = content.strip() if content else ""
+        return translation
