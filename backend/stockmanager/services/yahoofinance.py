@@ -17,8 +17,7 @@ def get_values_or_error(df, keys, source_name=""):
         try:
             values[key] = df.loc[key].iloc[0]
         except KeyError:
-            print(f"❌ {source_name} から '{key}' を取得できませんでした")
-            return None  # 一つでも欠けたら中断
+            return None  
     return values
 
 
@@ -167,6 +166,7 @@ class CompanyFinancialsFetcher:
             return "データなし"
         total_debt, cash_and_cash_equivalents, stockholders_equity = validated_bs[0], validated_bs[1], validated_bs[2]
         return safe_round(total_debt / (cash_and_cash_equivalents + stockholders_equity) * 100)
+
 
     # 上記の項目をJSONデータセットにまとめる関数
     def get_all_metrics(self):

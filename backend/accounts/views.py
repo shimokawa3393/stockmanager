@@ -1,6 +1,8 @@
 # accounts/views.py
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework_simplejwt.views import TokenRefreshView
+from rest_framework_simplejwt.serializers import TokenRefreshSerializer
 from rest_framework import status, permissions
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
@@ -35,7 +37,8 @@ class RegisterView(APIView):
         )
         return Response({"message": "登録成功！"}, status=status.HTTP_201_CREATED)
     
-    
+
+   
 # ログアウト
 class LogoutView(APIView):
     permission_classes = [permissions.IsAuthenticated]

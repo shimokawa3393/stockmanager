@@ -22,10 +22,8 @@ def fetch_company_data(symbol, request):
     cached_data = cache.get(cache_key)
 
     if cached_data:
-        print(f"✅ Cache hit: {cache_key}")
         return cached_data
     else:
-        print(f"❌ Cache miss: {cache_key}")
         time.sleep(3)  # ← MISS時だけにする！
         
     try:
