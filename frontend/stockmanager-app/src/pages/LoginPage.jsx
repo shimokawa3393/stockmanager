@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import "../styles/LoginPage.css"; // CSSファイルを読み込む
+import "../styles/LoginPage.css";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -14,12 +14,14 @@ export default function LoginPage() {
     e.preventDefault();
     setError("");
     try {
-      const response = await axios.post("https://stockmanager-n3b7.onrender.com/api/token/", {
+      const response = await axios.post(`${process.env.REACT_APP_API_URL}/token/`, {
         email,
         password,
       });
+
       localStorage.setItem("access_token", response.data.access);
       localStorage.setItem("refresh_token", response.data.refresh);
+
       axios.defaults.headers.common["Authorization"] = `Bearer ${response.data.access}`;
       navigate("/");
     } catch (err) {
@@ -28,8 +30,8 @@ export default function LoginPage() {
   };
 
   return (
-      <div className="login-container">
-        <Link to="/" className="nav-link">
+    <div className="login-container">
+      <Link to="/" className="nav-link">
         メインページへ
       </Link>
       <h2 className="login-title">ログイン</h2>

@@ -11,7 +11,7 @@ export default function MyPage() {
     api
       .get("accounts/user/")
       .then((res) => setUser(res.data))
-      .catch(() => navigate("/login")); // ログインしてなければリダイレクト
+      .catch(() => navigate("/login"));
   }, []);
 
   const handleDeleteAccount = async () => {

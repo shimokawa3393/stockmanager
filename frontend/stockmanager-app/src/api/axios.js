@@ -2,19 +2,22 @@ import axios from "axios";
 
 // 共通インスタンス作成
 const api = axios.create({
-  baseURL: "https://stockmanager-n3b7.onrender.com/api/",
+  baseURL: process.env.REACT_APP_API_URL,
 });
 
 // リクエスト前にトークンを自動付与
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("access_token");
+
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => {
+    return Promise.reject(error);
+  }
 );
 
 // レスポンスで401が返ってきたら自動リフレッシュ（1回だけ）
@@ -31,7 +34,7 @@ api.interceptors.response.use(
       originalRequest._retry = true;
 
       try {
-        const res = await axios.post("https://stockmanager-n3b7.onrender.com/api/token/refresh/", {
+        const res = await api.post(`/token/refresh/`, {
           refresh: localStorage.getItem("refresh_token"),
         });
 
@@ -40,11 +43,12 @@ api.interceptors.response.use(
 
         localStorage.setItem("access_token", newAccessToken);
         if (newRefreshToken) {
-          localStorage.setItem("refresh_token", newRefreshToken); // 更新があれば必ず保存
+          localStorage.setItem("refresh_token", newRefreshToken);
         }
 
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-        return api(originalRequest); // 🔁 リトライ
+
+        return api(originalRequest);
       } catch (refreshError) {
         localStorage.removeItem("access_token");
         localStorage.removeItem("refresh_token");
@@ -52,7 +56,6 @@ api.interceptors.response.use(
         return Promise.reject(refreshError);
       }
     }
-
     return Promise.reject(error);
   }
 );

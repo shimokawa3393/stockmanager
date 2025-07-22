@@ -16,30 +16,15 @@ export default function MainPage() {
   useEffect(() => {
     const init = async () => {
       setLoading(true);
-  
-      const refreshToken = localStorage.getItem("refresh_token");
-  
-      // トークン更新
-      if (refreshToken) {
-        try {
-          const res = await api.post("/token/refresh/", { refresh: refreshToken });
-          const newAccess = res.data.access;
-          localStorage.setItem("access_token", newAccess);
-          api.defaults.headers.common["Authorization"] = `Bearer ${newAccess}`;
-        } catch {
-          localStorage.removeItem("access_token");
-          localStorage.removeItem("refresh_token");
-        }
-      }
-  
+
       // ユーザー情報取得
       try {
         const res = await api.get("accounts/user/");
         setUsername(res.data.username);
-        } catch {
-          setUsername(null);
+      } catch {
+        setUsername(null);
       }
-  
+
       // ポートフォリオ取得
       try {
         const res = await api.get("stockmanager/main/");
@@ -55,10 +40,10 @@ export default function MainPage() {
         setLoading(false);
       }
     };
-  
+
     init();
   }, []);
-  
+
 
   // 検索ボタンを押したら、検索ワードをAPIに送信して、銘柄のシンボルを取得
   // 銘柄のシンボルを取得したら、銘柄の詳細ページに遷移
@@ -102,13 +87,13 @@ export default function MainPage() {
       const updatedData = [...data];
       if (data[index].is_saved) {
         await api.post(
-          "https://stockmanager-n3b7.onrender.com/api/stockmanager/remove/",
+          `${process.env.REACT_APP_API_URL}/stockmanager/remove/`,
           { symbol },
         );
         updatedData[index].is_saved = false;
       } else {
         await api.post(
-          "https://stockmanager-n3b7.onrender.com/api/stockmanager/save/",
+          `${process.env.REACT_APP_API_URL}/stockmanager/save/`,
           { symbol },
         );
         updatedData[index].is_saved = true;

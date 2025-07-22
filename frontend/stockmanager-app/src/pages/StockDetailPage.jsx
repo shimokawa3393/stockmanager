@@ -15,7 +15,8 @@ export default function StockDetailPage() {
   const token = localStorage.getItem("access_token");
 
   useEffect(() => {
-
+    
+    // ユーザー名を取得
     if (token) {
       api
         .get("accounts/user/")
@@ -23,10 +24,11 @@ export default function StockDetailPage() {
         .catch(() => setUsername(null));
     }
 
+    // 銘柄の詳細情報を取得
     const fetchDetails = async () => {
       try {
         const response = await api.get(
-          "https://stockmanager-n3b7.onrender.com/api/stockmanager/fetch/",
+          `${process.env.REACT_APP_API_URL}/stockmanager/fetch/`,
           { params: { symbol } },
         );
         setData(response.data);
@@ -39,6 +41,7 @@ export default function StockDetailPage() {
     fetchDetails();
   }, [symbol]);
 
+  // ログアウト
   const handleLogout = () => {
     localStorage.removeItem("access_token");
     localStorage.removeItem("refresh_token");
@@ -46,6 +49,7 @@ export default function StockDetailPage() {
     navigate("/login");
   };
 
+  // お気に入りに追加/削除
   const toggleSave = async () => {
     try {
       if (isSaved) {
@@ -60,7 +64,7 @@ export default function StockDetailPage() {
     }
   };
 
-
+  // エラー表示
   if (error) return <p className="error-message">{error}</p>;
   if (!data) return <p>読み込み中...</p>;
 
