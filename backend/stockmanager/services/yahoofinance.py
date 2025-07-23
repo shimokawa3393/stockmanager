@@ -177,10 +177,6 @@ class CompanyFinancialsFetcher:
         metrics = {}
 
         metrics["企業名"] = self.company_info.get("shortName", "N/A")
-        metrics["WEBサイト"] = self.company_info.get("website", "N/A")
-        
-        translation = UseChatGPT().getTranslation(self.company_info.get("longBusinessSummary", "N/A"))
-        metrics["企業概要"] = translation
 
         price = self.company_info.get("regularMarketPrice")
         currency_symbol = "\u00a5" if self.symbol_type == int else "$"
@@ -208,3 +204,14 @@ class CompanyFinancialsFetcher:
         metrics["ネットD/Eレシオ"] = self.calculateNetDERatio()
 
         return metrics
+    
+    # 詳細画面で銘柄の追加情報を表示させる関数
+    def get_company_overview(self):
+        metrics = {}
+        metrics["WEBサイト"] = self.company_info.get("website", "N/A")
+        
+        translation = UseChatGPT().getTranslation(self.company_info.get("longBusinessSummary", "N/A"))
+        metrics["企業概要"] = translation
+        
+        return metrics
+    

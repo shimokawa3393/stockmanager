@@ -6,7 +6,7 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, permissions
-from .controller import search_symbol, fetch_company_data
+from .controller import search_symbol, fetch_company_data  
 from .models import StockSymbol
 
 
@@ -25,7 +25,7 @@ class MainView(APIView):
             all_data = []
             for symbol in symbols:
                 try:
-                    metrics = fetch_company_data(symbol, request)
+                    metrics = fetch_company_data(symbol, request, include_overview=False) # 一覧画面で銘柄の追加情報を表示させない
                     all_data.append(
                         {
                             "symbol": symbol,
@@ -83,7 +83,7 @@ class FetchCompanyDataView(APIView):
         symbol = request.query_params.get("symbol")
 
         try:
-            metrics = fetch_company_data(symbol, request)
+            metrics = fetch_company_data(symbol, request, include_overview=True) # 詳細画面で銘柄の追加情報を表示させる
             return Response(
                 {
                     "symbol": symbol,

@@ -15,26 +15,33 @@ def search_symbol(company_name, request):
     return symbol
 
 
-# 銘柄指定で銘柄を表示させる関数(今は、一覧画面・詳細画面で共通の関数)
-def fetch_company_data(symbol, request):
-    symbol = convert_symbol(symbol)  # ←ここで変換
-    cache_key = f"metrics_{request.user.id}_{symbol}"
+# 銘柄を表示させる関数(条件分岐で一覧画面・詳細画面で使い分ける)
+def fetch_company_data(symbol, request, include_overview=False):
+    symbol = convert_symbol(symbol)
+    cache_key = f"metrics_{request.user.id}_{symbol}_{'detail' if include_overview else 'list'}"
     cached_data = cache.get(cache_key)
 
     if cached_data:
         return cached_data
     else:
-        time.sleep(3)  # ← MISS時だけにする！
-        
+        time.sleep(3)
+
     try:
-        financials_fetcher = CompanyFinancialsFetcher(symbol)
-        financials_fetcher.getCompanyFinancials()
-        metrics = financials_fetcher.get_all_metrics()
+        fetcher = CompanyFinancialsFetcher(symbol)
+        fetcher.getCompanyFinancials()
+        metrics = fetcher.get_all_metrics()
+
+        # 詳細画面で銘柄の追加情報を表示させる
+        if include_overview:
+            overview = fetcher.get_company_overview()
+            metrics["WEBサイト"] = overview.get("WEBサイト", "N/A")
+            metrics["企業概要"] = overview.get("企業概要", "N/A")
+
     except Exception as e:
         import traceback
         print("❌ エラー発生:", str(e))
         traceback.print_exc()
-        raise  # 必ず再スローしてHTTP 500出すように
+        raise
 
     cache.set(cache_key, metrics, CACHE_TIMEOUT)
     return metrics

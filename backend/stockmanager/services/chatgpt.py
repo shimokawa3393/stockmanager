@@ -41,17 +41,19 @@ class UseChatGPT:
         content = response.choices[0].message.content
         self.symbol = content.strip() if content else ""
         return self.symbol
-        
-        
+    
+    
+    # 企業概要の英文を日本語に翻訳する関数
     def getTranslation(self, text):   
+        if text == "N/A" or text == "":
+            return "N/A"
+        
         response = self.client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
                 {
                     "role": "system",
-                    "content": """
-                        英文を日本語に翻訳してください。
-                        """,
+                    "content": "英文を日本語に翻訳してください。",
                 },
                 {
                     "role": "user",

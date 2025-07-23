@@ -15,12 +15,36 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.nav-links {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.nav-link {
+  text-decoration: none;
+  color: #6b21a8;
+  font-weight: 500;
+  margin-left: 1.5rem;
+}
+
+.logout-button {
+  background: none;
+  border: none;
+  color: #6b21a8;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  padding: 0;
 }
 
 .search-box {
   display: flex;
   gap: 0.5rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
   justify-content: flex-start;
 }
 
@@ -39,6 +63,7 @@
   border-radius: 0.375rem;
   border: none;
   cursor: pointer;
+  flex: 0 0 auto;
 }
 
 .search-button:hover {
@@ -48,7 +73,7 @@
 .main-title {
   font-size: 1.5rem;
   font-weight: bold;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 .error-message {
@@ -69,28 +94,6 @@
   padding: 16px;
   background-color: #fdfdfd;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-}
-
-.nav-links {
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-}
-
-.nav-link {
-  text-decoration: none;
-  color: #6b21a8;
-  font-weight: 500;
-}
-
-.logout-button {
-  background: none;
-  border: none;
-  color: #6b21a8;
-  cursor: pointer;
-  font-size: 1rem;
-  font-weight: 500;
-  padding: 0;
 }
 
 .json-display {
