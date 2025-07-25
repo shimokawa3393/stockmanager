@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/axios";
-import "../styles/MyPage.css";  // ← 専用CSS
+import "../styles/Common.css";
+import "../styles/MyPage.css";
 
 export default function MyPage() {
   const [user, setUser] = useState(null);

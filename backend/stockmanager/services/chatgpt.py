@@ -11,7 +11,7 @@ BASE_DIR = Path(__file__).resolve().parents[2]
 load_dotenv(dotenv_path=BASE_DIR / ".env")
 
 # ChatGPTを使用するクラス
-class UseChatGPT:
+class ChatGPT:
     def __init__(self):
         self.symbol = None
         self.api_key = os.getenv("OpenAI_API_KEY")

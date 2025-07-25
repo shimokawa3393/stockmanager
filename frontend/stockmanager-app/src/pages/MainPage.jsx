@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import api from "../api/axios";
+import "../styles/Common.css";
 import "../styles/MainPage.css";
 
 export default function MainPage() {
@@ -107,89 +108,89 @@ export default function MainPage() {
 
   return (
     <div className="main-container">
-      <header className="header">
-        <div className="greeting">
-          {username ? `${username} さん` : "ゲスト さん"}
+      <div className="main-common-wrapper">
+        <header className="header">
+          <div className="greeting">
+            {username ? `${username} さん` : "ゲスト さん"}
+          </div>
+          <div className="nav-links">
+            {username ? (
+              <>
+                <Link to="/mypage" className="nav-link">
+                  マイページ
+                </Link>
+                <button onClick={handleLogout} className="nav-link logout-button">
+                  ログアウト
+                </button>
+              </>
+            ) : (
+              <>
+                <Link to="/login" className="nav-link">
+                  ログイン
+                </Link>
+                <Link to="/register" className="nav-link">
+                  ユーザー登録
+                </Link>
+              </>
+            )}
+          </div>
+        </header>
+        <div className="search-box">
+          <input
+            type="text"
+            placeholder="企業名で検索"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="search-input"
+          />
+          <button onClick={handleSearch} className="search-button">
+            検索
+          </button>
         </div>
-        <div className="nav-links">
-          {username ? (
-            <>
-              <Link to="/mypage" className="nav-link">
-                マイページ
-              </Link>
-              <button onClick={handleLogout} className="nav-link logout-button">
-                ログアウト
-              </button>
-            </>
-          ) : (
-            <>
-              <Link to="/login" className="nav-link">
-                ログイン
-              </Link>
-              <Link to="/register" className="nav-link">
-                ユーザー登録
-              </Link>
-            </>
-          )}
-        </div>
-      </header>
-
-      <div className="search-box">
-        <input
-          type="text"
-          placeholder="企業名で検索"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="search-input"
-        />
-        <button onClick={handleSearch} className="search-button">
-          検索
-        </button>
       </div>
 
-      {username && (
-        <h1 className="main-title">{username} さんのポートフォリオ</h1>
-      )}
-
       {loading ? (
-        <p>読み込み中...</p>
+        <span className="loading-message">読み込み中...</span>
       ) : error ? (
-        <p className="error-message">{error}</p>
+        <span className="error-message">{error}</span>
       ) : (
-        <ul className="stock-list">
-          {data.map((item, index) => (
-            <div key={index} className="stock-card">
-              <strong>
-                {item.symbol}
-                <span
-                  className={`heart-icon ${item.is_saved ? "saved" : ""}`}
-                  onClick={() => toggleSave(item.symbol, index)}
-                  title="お気に入りに追加/削除"
-                >
-                  {item.is_saved ? "❤️" : "🤍"}
-                </span>
-              </strong>
-              <h1>
-                <Link to={`/stockdetail/${item.symbol}`} className="stock-link">
-                  {item.metrics?.["企業名"] || "取得失敗"}
-                </Link>
-              </h1>
-              <h2>
-                <strong>株価:</strong> {item.metrics?.["株価"] || "-"}
-              </h2>
-              <h3>財務指標一覧</h3>
-              <ul>
-                {Object.entries(item.metrics || {})
-                  .filter(([key]) => key !== "企業名" && key !== "WEBサイト" && key !== "企業概要" && key !== "株価")
-                  .map(([key, value]) => (
-                    <li key={key}>
-                      <strong>{key}:</strong> {value}
-                    </li>
-                  ))}
-              </ul>
-            </div>
-          ))}
-        </ul>
+        data.length === 0 ? (
+          <p className="empty-message">お気に入りを追加してみましょう！</p>
+        ) : (
+          <ul className="stock-list">
+            {data.map((item, index) => (
+              <div key={index} className="main-stock-card">
+                <strong>
+                  {item.symbol}
+                  <span
+                    className={`heart-icon ${item.is_saved ? "saved" : ""}`}
+                    onClick={() => toggleSave(item.symbol, index)}
+                    title="お気に入りに追加/削除"
+                  >
+                    {item.is_saved ? "❤️" : "🤍"}
+                  </span>
+                </strong>
+                <h1>
+                  <Link to={`/stockdetail/${item.symbol}`} className="stock-link">
+                    {item.metrics?.["企業名"] || "取得失敗"}
+                  </Link>
+                </h1>
+                <h2>
+                  <strong>株価:</strong> {item.metrics?.["株価"] || "-"}
+                </h2>
+                <ul>
+                  {Object.entries(item.metrics || {})
+                    .filter(([key]) => key !== "企業名" && key !== "WEBサイト" && key !== "企業概要" && key !== "株価")
+                    .map(([key, value]) => (
+                      <li key={key}>
+                        <strong>{key}:</strong> {value}
+                      </li>
+                    ))}
+                </ul>
+              </div>
+            ))}
+          </ul>
+        )
       )}
     </div>
   );

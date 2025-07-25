@@ -84,9 +84,17 @@ class FetchCompanyDataView(APIView):
 
         try:
             metrics = fetch_company_data(symbol, request, include_overview=True) # 詳細画面で銘柄の追加情報を表示させる
+            
+            # デフォルトは False（ログインしてない or お気に入りじゃない）
+            is_saved = False
+
+            if request.user.is_authenticated:
+                is_saved = StockSymbol.objects.filter(user=request.user, symbol=symbol).exists()
+
             return Response(
                 {
                     "symbol": symbol,
+                    "is_saved": is_saved,
                     "metrics": metrics,
                 }
             )

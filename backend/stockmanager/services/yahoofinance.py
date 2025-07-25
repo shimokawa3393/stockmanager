@@ -1,6 +1,6 @@
 import math
 import yfinance as yf
-from .chatgpt import UseChatGPT
+from .chatgpt import ChatGPT
 
 
 # 小数点以下2桁に四捨五入する関数
@@ -89,11 +89,10 @@ class CompanyFinancialsFetcher:
     def calculateProfitMargin(self):
         pl_keys = ["Net Income", "Total Revenue"]
         pl_values = get_values_or_error(self.company_pl, pl_keys, source_name="PL")
-        
         validated_pl = extract_and_validate(pl_values, pl_keys)
         if not validated_pl:
             return "データなし"
-        net_income, total_revenue = validated_pl[0], validated_pl[1]
+        net_income, total_revenue = validated_pl[0], validated_pl[1]        
         return safe_round(net_income / total_revenue * 100)
 
 
@@ -101,7 +100,6 @@ class CompanyFinancialsFetcher:
     def calculateEquityRatio(self):
         bs_keys = ["Stockholders Equity", "Total Assets"]
         bs_values = get_values_or_error(self.company_bs, bs_keys, source_name="BS")
-        
         validated_bs = extract_and_validate(bs_values, bs_keys, allow_zero_divisor=True)
         if not validated_bs:
             return "データなし"
@@ -111,7 +109,7 @@ class CompanyFinancialsFetcher:
     # 流動比率を計算する関数
     def calculateCurrentRatio(self):
         bs_keys = ["Current Assets", "Current Liabilities"]
-        bs_values = get_values_or_error(self.company_bs, bs_keys, source_name="BS")
+        bs_values = get_values_or_error(self.company_bs, bs_keys, source_name="BS")                
         validated_bs = extract_and_validate(bs_values, bs_keys)
         if not validated_bs:
             return "データなし"
@@ -190,7 +188,7 @@ class CompanyFinancialsFetcher:
             self.company_info.get("ebitdaMargins", 0) * 100
         )
         metrics["純利益率"] = self.calculateProfitMargin()
-        metrics["PER"] = safe_round(self.company_info.get("trailingPE", 0))
+        metrics["PER"] = safe_round(self.company_info.get("forwardPE", 0))
         metrics["PBR"] = safe_round(self.company_info.get("priceToBook", 0))
         metrics["ROE"] = safe_round(self.company_info.get("returnOnEquity", 0) * 100)
         metrics["ROA"] = safe_round(self.company_info.get("returnOnAssets", 0) * 100)
@@ -210,7 +208,7 @@ class CompanyFinancialsFetcher:
         metrics = {}
         metrics["WEBサイト"] = self.company_info.get("website", "N/A")
         
-        translation = UseChatGPT().getTranslation(self.company_info.get("longBusinessSummary", "N/A"))
+        translation = ChatGPT().getTranslation(self.company_info.get("longBusinessSummary", "N/A"))
         metrics["企業概要"] = translation
         
         return metrics

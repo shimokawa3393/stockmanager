@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import "../styles/Common.css";
 import "../styles/LoginPage.css";
 
 export default function LoginPage() {
@@ -30,35 +31,37 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="login-container">
-      <Link to="/" className="nav-link">
-        メインページへ
-      </Link>
-      <h2 className="login-title">ログイン</h2>
-      {error && <p className="login-error">{error}</p>}
-      <form onSubmit={handleLogin}>
-        <div className="login-field">
-          <label>メールアドレス</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </div>
-        <div className="login-field">
-          <label>パスワード</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
-        <button type="submit" className="login-button">
-          ログイン
-        </button>
-      </form>
+    <div className="main-container">
+      <div className="login-container">
+        <Link to="/" className="nav-link">
+          メインページへ
+        </Link>
+        <h2 className="login-title">ログイン</h2>
+        {error && <p className="login-error">{error}</p>}
+        <form onSubmit={handleLogin}>
+          <div className="login-field">
+            <label>メールアドレス</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+          <div className="login-field">
+            <label>パスワード</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+          <button type="submit" className="login-button">
+            ログイン
+          </button>
+        </form>
+      </div>
     </div>
   );
 }

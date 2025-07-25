@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import api from "../api/axios";
+import "../styles/Common.css";
 import "../styles/StockDetailPage.css";
 
 export default function StockDetailPage() {
@@ -41,6 +42,15 @@ export default function StockDetailPage() {
 
     fetchDetails();
   }, [symbol]);
+
+
+  // data が更新されたら isSaved をセット
+  useEffect(() => {
+    if (data && typeof data.is_saved !== "undefined") {
+      setIsSaved(data.is_saved);
+    }
+  }, [data]);
+
 
   // 検索ボタンを押したら、検索ワードをAPIに送信して、銘柄のシンボルを取得
   // 銘柄のシンボルを取得したら、銘柄の詳細ページに遷移
@@ -94,52 +104,53 @@ export default function StockDetailPage() {
   };
 
   // エラー表示
-  if (error) return <p className="error-message">{error}</p>;
-  if (!data) return <p>読み込み中...</p>;
+  if (error) return <span className="error-message">{error}</span>;
+  if (!data) return <span className="loading-message">読み込み中...</span>;
 
   return (
     <div className="main-container">
-      <header className="header">
-        <div className="greeting">
-          {username ? `${username} さん` : "ゲスト さん"}
+      <div className="detail-common-wrapper">
+        <header className="header">
+          <div className="greeting">
+            {username ? `${username} さん` : "ゲスト さん"}
+          </div>
+          <div className="nav-links">
+            {username ? (
+              <>
+                <Link to="/mypage" className="nav-link">
+                  マイページ
+                </Link>
+                <button onClick={handleLogout} className="nav-link logout-button">
+                  ログアウト
+                </button>
+              </>
+            ) : (
+              <>
+                <Link to="/login" className="nav-link">
+                  ログイン
+                </Link>
+                <Link to="/register" className="nav-link">
+                  ユーザー登録
+                </Link>
+              </>
+            )}
+          </div>
+        </header>
+        <div className="search-box">
+          <input
+            type="text"
+            placeholder="企業名で検索"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="search-input"
+          />
+          <button onClick={handleSearch} className="search-button">
+            検索
+          </button>
         </div>
-        <div className="nav-links">
-          {username ? (
-            <>
-              <Link to="/mypage" className="nav-link">
-                マイページ
-              </Link>
-              <button onClick={handleLogout} className="nav-link logout-button">
-                ログアウト
-              </button>
-            </>
-          ) : (
-            <>
-              <Link to="/login" className="nav-link">
-                ログイン
-              </Link>
-              <Link to="/register" className="nav-link">
-                ユーザー登録
-              </Link>
-            </>
-          )}
-        </div>
-      </header>
-
-      <div className="search-box">
-        <input
-          type="text"
-          placeholder="企業名で検索"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="search-input"
-        />
-        <button onClick={handleSearch} className="search-button">
-          検索
-        </button>
       </div>
 
-      <div className="detail-container">
+      <div className="detail-stock-card">
         <strong>
           {data.symbol}
           <span
@@ -153,20 +164,30 @@ export default function StockDetailPage() {
         <h1>
           {data.metrics?.["企業名"] || "取得失敗"}{" "}
         </h1>
-        <p>
-          <strong>WEBサイト:</strong> <a href={data.metrics?.["WEBサイト"]} target="_blank" rel="noopener noreferrer">{data.metrics?.["WEBサイト"] || "-"}</a>
-        </p>
-        <p>
-          <strong>企業概要:</strong>
-          <br />
-          {data.metrics?.["企業概要"] || "-"}
-          <br />
-          <br />
-        </p>
+        <div className="info-item">
+          <span className="info-label">WEBサイト:</span>
+          {data.metrics?.["WEBサイト"] ? (
+            <a
+              href={data.metrics["WEBサイト"]}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="info-link"
+            >
+              {data.metrics["WEBサイト"]}
+            </a>
+          ) : (
+            <span className="info-placeholder">-</span>
+          )}
+        </div>
+        <div className="info-item">
+          <span className="info-label">企業概要:</span>
+          <p className="info-text summary-scroll">
+            {data.metrics?.["企業概要"] || <span className="info-placeholder">-</span>}
+          </p>
+        </div>
         <h2>
           <strong>株価:</strong> {data.metrics?.["株価"] || "-"}
         </h2>
-        <h3>財務指標一覧</h3>
         <ul>
           {Object.entries(data.metrics || {})
             .filter(([key]) => key !== "企業名" && key !== "WEBサイト" && key !== "企業概要" && key !== "株価")
