@@ -40,18 +40,18 @@ export default function LoginPage() {
         {error && <p className="login-error">{error}</p>}
         <form onSubmit={handleLogin}>
           <div className="login-field">
-            <label>メールアドレス</label>
             <input
               type="email"
+              placeholder="メールアドレス"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
             />
           </div>
           <div className="login-field">
-            <label>パスワード</label>
             <input
               type="password"
+              placeholder="パスワード"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
@@ -61,6 +61,9 @@ export default function LoginPage() {
             ログイン
           </button>
         </form>
+        <p>
+          登録していない方はこちら <Link to="/register">ユーザー登録</Link>
+        </p>
       </div>
     </div>
   );

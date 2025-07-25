@@ -3,37 +3,56 @@ body {
 }
 
 .main-container {
-    max-width: 1200px;
+    max-width: 1400px;
     padding: 1.5rem;
-    margin: 2.5rem auto;
+    margin: 1.5rem auto;
 }
 
 .header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1.5rem;
+    margin-bottom: 2rem;
 }
+
+.greeting {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+}
+
+
+.greeting-username {
+    font-size: 1.2rem;
+    font-weight: 500;
+}
+
 
 .nav-links {
     display: flex;
+    gap: 1rem;
     align-items: center;
 }
 
 .nav-link {
+    padding: 0.4rem 1rem;
+    border: 1px solid #8b5cf6;
+    background-color: white;
+    color: #8b5cf6;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
     text-decoration: none;
-    color: #6b21a8;
-    font-weight: 500;
+    transition: all 0.2s ease;
+    cursor: pointer;
 }
 
-.logout-button {
-    background: none;
-    border: none;
-    color: #6b21a8;
-    cursor: pointer;
-    font-size: 1rem;
-    font-weight: 500;
-    padding: 0;
+.nav-link:hover {
+    background-color: #8b5cf6;
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(139, 92, 246, 0.4);
 }
 
 .search-box {
@@ -70,9 +89,39 @@ body {
     margin: 1rem;
 }
 
-.loading-message {
-    margin: 1rem;
-}
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255,255,255,0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #555;
+    backdrop-filter: blur(2px);
+  }
+  
+  .spinner {
+    border: 4px solid #ddd;
+    border-top: 4px solid #8b5cf6;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    animation: spin 1s linear infinite;
+    margin-right: 0.8rem;
+  }
+  
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  
 
 .heart-icon {
     cursor: pointer;
@@ -97,7 +146,7 @@ body {
     }
 
     .search-input {
-        width: 35%;
+        width: 40%;
     }
 }
 
@@ -107,13 +156,19 @@ body {
     }
 
     .search-input {
-        width: 50%;
+        width: 60%;
     }
 }
 
 @media (max-width: 480px) {
     .nav-links {
         gap: 1rem;
+    }
+
+    .nav-link {
+        font-size: 0.8rem;
+        padding: 0.3rem 0.8rem;
+        border-radius: 6px;
     }
 
     .search-input {

@@ -32,18 +32,18 @@
 
 @media (max-width: 1600px) {
   .mypage-container {
-    max-width: 50%;
+    max-width: 45%;
   }
 }
 
 @media (max-width: 768px) {
   .mypage-container {
-    max-width: 70%;
+    max-width: 60%;
   }
 }
 
 @media (max-width: 480px) {
   .mypage-container {
-    max-width: 90%;
+    max-width: 75%;
   }
 }

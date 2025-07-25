@@ -111,7 +111,8 @@ export default function MainPage() {
       <div className="main-common-wrapper">
         <header className="header">
           <div className="greeting">
-            {username ? `${username} さん` : "ゲスト さん"}
+            <span className="greeting-username">{username ? `${username}` : "ゲスト"}</span>
+            <span className="greeting-text">さん</span>
           </div>
           <div className="nav-links">
             {username ? (
@@ -119,7 +120,7 @@ export default function MainPage() {
                 <Link to="/mypage" className="nav-link">
                   マイページ
                 </Link>
-                <button onClick={handleLogout} className="nav-link logout-button">
+                <button onClick={handleLogout} className="nav-link">
                   ログアウト
                 </button>
               </>
@@ -150,7 +151,10 @@ export default function MainPage() {
       </div>
 
       {loading ? (
-        <span className="loading-message">読み込み中...</span>
+        <div className="loading-overlay">
+          <div className="spinner" />
+          読み込み中...
+        </div>
       ) : error ? (
         <span className="error-message">{error}</span>
       ) : (

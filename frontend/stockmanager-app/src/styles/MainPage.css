@@ -18,7 +18,6 @@
 
 .main-stock-card {
   flex: 0 0 auto;
-  width: 400px;
   border: 1px solid #ccc;
   border-radius: 12px;
   padding: 1rem;
@@ -49,4 +48,23 @@
   font-size: 1rem;
   color: #333;
   list-style: none;
+}
+
+
+@media (max-width: 1600px) {
+  .main-stock-card {
+    width: 500px;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-stock-card {
+    width: 400px;
+  }
+}
+
+@media (max-width: 480px) {
+  .main-stock-card {
+    width: 300px;
+  }
 }

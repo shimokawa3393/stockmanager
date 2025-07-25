@@ -105,7 +105,11 @@ export default function StockDetailPage() {
 
   // エラー表示
   if (error) return <span className="error-message">{error}</span>;
-  if (!data) return <span className="loading-message">読み込み中...</span>;
+  if (!data)
+    return <div className="loading-overlay">
+      <div className="spinner" />
+      読み込み中...
+    </div>
 
   return (
     <div className="main-container">
