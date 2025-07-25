@@ -28,8 +28,14 @@ export default function MyPage() {
     }
   };
 
-  if (!user) return <p>読み込み中...</p>;
-
+  if (!user)
+    return (
+      <div className="loading-overlay">
+        <div className="spinner" />
+        読み込み中...
+      </div>
+    );
+    
   return (
     <div className="mypage-container">
       <h1>マイページ</h1>
